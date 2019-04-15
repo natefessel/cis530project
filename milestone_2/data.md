@@ -12,4 +12,10 @@ The first dataset we're using was compiled for a [wine-review-based predictive m
 * Province: the province or state that the wine is from
 * Variety: the type of grapes used to make the wine (ie Pinot Noir)
 
+After analyzing the wine review data, we noticed the following trends:
+1. The data is pretty US-centric (and of that, mainly California).
+2. The top five varieties each have a large number of samples, which might make it a good input to the model.
+3. Points are basically normally distributed, with a mean / median around 88, a standard deviation of 3, and a range of 80 to 100.
+4. Price is heavily skewed towards cheaper wines: 39.9% of wines cost less than $20, 61.9% cost less than $30, and 84.3% cost less than $50
+
 TODO: How are we splitting the data?
