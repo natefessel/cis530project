@@ -21,7 +21,8 @@ After analyzing the wine review data, we noticed the following trends:
 
 We will randomly partition the data into 80% training, 10% development, and 10% test.
 
-Example of the data:  
+Example of the data:
+
 | Number | Country | Description                                                                                                                                                                                                                                       | Designation | Points | Cost | Province   | Variety         | Winery  |
 |--------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|--------|------|------------|-----------------|---------|
 | 31498  | US      | Made from vines nearly 30 years old, this ultra-ripe Sauvignon Blanc was oak-aged in neutral barrels, and comes across with Chardonnay-like richness. It's viscous, rich to the point of liquorous—not for all palates, but done well in its way. | Estate      | 89     | 25.0 | Washington | Sauvignon Blanc | Gamache |
