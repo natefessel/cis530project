@@ -2,7 +2,7 @@
 
 ### Origin
 
-We evaluate our language generation ability by comparing the probabality that GAN's output text is actual reviews to the probability that the test wine reviews are actual reviews based on the trained language model. This probability calculation for an individual given review will be computed within the adverserial Neural Network in GAN, and compiled for all of the output and test data with score.py.
+We evaluate our language generation ability by comparing the probabality that GAN's output text is actual reviews to the probability that the test wine reviews are actual reviews based on the trained language model. This probability calculation for an individual given review will be computed within the adverserial Neural Network in GAN, and compiled for all of the reviews in the output and test data within score.py.
 
 Since we are not evaluating against gold labels, and are trying to produce output which is as realistic as possible, we will want the ratio of the average GAN output probability to average test data probability to be as close to 1 as possible. Thus we will aim for values of this calculated ratio to be as close to 1 as possible.
 
