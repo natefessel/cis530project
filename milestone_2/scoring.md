@@ -1,5 +1,7 @@
-##Evaluation Metric:
+﻿##Evaluation Metric:
+
 ###Origin
+
 We evaluate our language generation ability by comparing the perplexity of GAN's output text to the perplexity of test wine reviews. Perplexity is
 exactly as defined in class and used within Homework 5.
 
