@@ -24,7 +24,7 @@ Note that the language model must contain a function called "perplexity" in orde
 ###Sample Running
 In the command line run (the below code block is pseudo windows cmd text, adjust as necessary for IOS):
 
-```python
+```
 cd> py score.py --testText "~\wine_reviews_test.txt" --ganOutput "~\GAN_output.txt" --langModelPickle "~\langModel.pickle"
 ```
 
