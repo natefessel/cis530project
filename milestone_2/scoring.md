@@ -1,6 +1,6 @@
-##Evaluation Metric:
+## Evaluation Metric:
 
-###Origin
+### Origin
 
 We evaluate our language generation ability by comparing the perplexity of GAN's output text to the perplexity of test wine reviews. Perplexity is
 exactly as defined in class and used within Homework 5.
@@ -10,7 +10,7 @@ the average GAN output perplexity to average test data perplexity against our tr
 
 Once this ratio score has leveled off in terms of performance, human evaluation of the GAN output would be a useful task to manually check.
 
-###Running score.py
+### Running score.py
 You will need three things to run the evaluation file score.py:
 
 ⋅⋅* --testText, a text file with wine reviews not used for training the model. The format is assumed to be the same as the file "wine_reviews_test.csv"; the "denominator" in the perplexity ratio metric comes from the average perplexity on these documents
@@ -20,7 +20,7 @@ You will need three things to run the evaluation file score.py:
 ⋅⋅* --langModelPickle, a pickle with the stored language model which will be used to assess the perplexity of each of the test and generated reveiews.
 Note that the language model must contain a function called "perplexity(self, text)" in order to work
 
-###Sample Running
+### Sample Running
 In the command line run (the below code block is pseudo windows cmd text, adjust as necessary for IOS):
 
 ```
