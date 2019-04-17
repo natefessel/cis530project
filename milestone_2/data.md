@@ -15,11 +15,19 @@ The first dataset we're using was compiled for a [wine-review-based predictive m
 
 After analyzing the wine review data, we noticed the following trends:
 1. The data is pretty US-centric (and of that, mainly California).
+
+![](countries.png)
+
 2. The top five varieties each have a large number of samples, which might make it a good input to the model.
 3. Points are basically normally distributed, with a mean / median around 88, a standard deviation of 3, and a range of 80 to 100.
+
+![](points.png)
+
 4. Price is heavily skewed towards cheaper wines: 39.9% of wines cost less than $20, 61.9% cost less than $30, and 84.3% cost less than $50
 
-We will randomly partition the data into 80% training, 10% development, and 10% test.
+
+
+We have randomly partition the data into 80% training, 10% development, and 10% test, which can be seen in the `data/` directory.
 
 Example of the data:
 
