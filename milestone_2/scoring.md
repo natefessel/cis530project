@@ -13,11 +13,11 @@ Once this ratio score has leveled off in terms of performance, human evaluation 
 ### Running score.py
 You will need three things to run the evaluation file score.py:
 
-⋅⋅* --testText, a text file with wine reviews not used for training the model. The format is assumed to be the same as the file "wine_reviews_test.csv"; the "denominator" in the perplexity ratio metric comes from the average perplexity on these documents
+1. --testText, a text file with wine reviews not used for training the model. The format is assumed to be the same as the file "wine_reviews_test.csv"; the "denominator" in the perplexity ratio metric comes from the average perplexity on these documents
 
-⋅⋅* --ganText, a text file with a list of GAN generated wine reviews. The format is assumed to be a single column of generated reviews, with each review seperated by a new line character: '\n'.
+2. --ganText, a text file with a list of GAN generated wine reviews. The format is assumed to be a single column of generated reviews, with each review seperated by a new line character: '\n'.
 
-⋅⋅* --langModelPickle, a pickle with the stored language model which will be used to assess the perplexity of each of the test and generated reveiews.
+3. --langModelPickle, a pickle with the stored language model which will be used to assess the perplexity of each of the test and generated reveiews.
 Note that the language model must contain a function called "perplexity(self, text)" in order to work
 
 ### Sample Running
