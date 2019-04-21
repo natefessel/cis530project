@@ -24,7 +24,7 @@ The authors propose RankGAN which is a generative adversarial network that gener
 The authors create an adversarial training to create dialogue generation. They trained a generative model to produce response sentences and a discriminator to distinguish between human-generated dialogues and machine-generated ones. The outputs from the discriminator are used as rewards for the generative system to help it produce even better dialogues that are more human-like. They used human judges to determine the quality of the conversation and whether it was done by a human or not. Multi-turn dialogues where the conversation goes back and forth instead of single-turn dialogues where there is only sentence no dialogue. The multi-turn dialogues perform better for the proposed generative model. 
 
 
-### Which approach we choose. 
+### Which approach we chose and why:
 
 
 
@@ -45,6 +45,6 @@ Yu, Lantao, et al. “SeqGAN: Sequence Generative Adversarial Nets with Policy G
 
 Sai, et al. “Adversarial Generation of Natural Language.” ArXiv.org, 31 May 2017, arxiv.org/abs/1705.10929.
 
-Lin, Kevin, et al. “Adversarial Ranking for Language Generation.” Adversarial Ranking for Language Generation, 1 Jan. 1970, papers.nips.cc/paper/6908-adversarial-ranking-for-language-generation.
+Lin, Kevin, et al. “Adversarial Ranking for Language Generation.” Adversarial Ranking for Language Generation, 2017, papers.nips.cc/paper/6908-adversarial-ranking-for-language-generation.
 
 Li, et al. “Adversarial Learning for Neural Dialogue Generation.” ArXiv.org, 24 Sept. 2017, arxiv.org/abs/1701.06547.
