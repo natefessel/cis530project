@@ -1,6 +1,6 @@
 ## Literature Review
 
-As a reminder we want to see if GAN’s can be used to effectively generate text. We have reviewed several papers that have tried to solve that exact problem. Our Github repo, which contains our saved models, a markdown readme for our implementation, a presentation draft, and our baseline.py file, is available [at this link](https://github.com/natefessel/cis530project/Milestone%203)
+As a reminder we want to see if GAN’s can be used to effectively generate text. We have reviewed several papers that have tried to solve that exact problem. Our Github repo, which contains our saved models, a markdown readme for our implementation, a presentation draft, and our baseline.py file, is available [at this link](https://github.com/natefessel/cis530project/tree/master/Milestone%203)
 
 ### Paper 1: Language Generation with Recurrent Generative Adversarial Networks without Pre-training
 
