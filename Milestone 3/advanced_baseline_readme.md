@@ -6,7 +6,7 @@ Implement a LSTM, LSTM, WGAN (generator, discriminator, GAN connection, respecti
 ### Using our code
 Running through all of the code with model building in "baseline.py" would probably take about 30 - 40 minutes of run time to re-train our models etc. This is even after greatly limiting the amount of text used to train our generation model, which was very costly. 
 
-Another high cost part of the code came from when we had to train our descriminator.  We needed to generate thousands of fake reviews, so that our model could train on the task of distinguishing fake reviews from real reviews (perhaps unsurprisingly, we could not find any datasets of computer generated wine reviews online, thus necessitating the creation of our own data set).
+Another high cost part of the code came from when we had to train our descriminator.  We needed to generate thousands of fake reviews, so that our model could train on the task of distinguishing fake reviews from real reviews (perhaps unsurprisingly, we could not find any datasets of computer generated wine reviews online, thus necessitating the creation of our own data set). 4000 generated fake reviews are stored in the file "gen_4000.txt". Each fake review chunk is seperated by a new line character.
 
 We recommend browsing through the code as needed, but note that in its current form it is set up to load models and not train them. Be aware that Keras and TensorFlow as Keras's backend are needed to run code chunks involving our model.
 
@@ -48,7 +48,7 @@ Sample of output review chunks which beat our discriminator and were accepted as
 
 ### Areas to enhance for the next stage:
 
-1. Actually having a method for propogating loss in the discriminator to the text generator would be ideal. This will be likely the most difficult thing to implement, and it is challenging to see how to proceed from our current model.
+1. Actually having a method for propogating loss in the discriminator to the text generator so that our generator's output improves would be ideal. This will be likely the most difficult thing to implement, and it is challenging to see how to proceed from our current model.
 
 2. Dealing with prepositions and stop-words occuring back-to-back in our outputs, as well as repeating words would be a nice extension and would make our generated sentences much more convincing to the human eye. Perhaps the solution to this issue rests with how we are picking the next word in the generated phrase.
 
