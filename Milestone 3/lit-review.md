@@ -1,6 +1,6 @@
 ## Literature Review
 
-As a reminder we want to see if GAN’s can be used to effectively generate text. We have reviewed several papers that have tried to solve that exact problem. 
+As a reminder we want to see if GAN’s can be used to effectively generate text. We have reviewed several papers that have tried to solve that exact problem. Our Github repo, which contains our saved models, a markdown readme for our implementation, a presentation draft, and our baseline.py file, is available [at this link](https://github.com/natefessel/cis530project/Milestone%203)
 
 ### Paper 1: Language Generation with Recurrent Generative Adversarial Networks without Pre-training
 
@@ -27,11 +27,6 @@ The authors create an adversarial training to create dialogue generation. They t
 ### Which approach we chose and why:
 
 We chose to implement the GAN model which uses a LSTM as the generator, a different LSTM as the discriminator, and WGAN-GP (wasserstein GAN, with a gradient penalty) as the objective from paper number 3. This model was chosen over others implemented in the other papers mainly to ensure we were not biting off more than we can chew. As opposed to other papers that we have cited which require training the model slowly with variable length outputs, using a policy gradient and Monte Carlo search, using a ranking system, or employing reinforcement learning, the solution we have chosen to implement simply "forces the discriminator to operate on continuous valued output distributions" as its primary insight. This is how the paper deals with the issue of language models having a discrete outcome space, which in the past has hampered GAN performance within NLP as compared to its success with image data. This seemed more tractable of a baseline for our group to implement, and to top it all off, the task they test their method on is very similiar to what we are trying to do with our wine review data (where they train on CMU-SE, a collection of simple English sentences from Penn Treebank, we will be using our wine review data).
-
-
-
-
-
 
 
 
