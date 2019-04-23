@@ -58,7 +58,6 @@ seedTriGrams = seedTriGrams[:20000]
 ##Preparing the dataset with keras
 tokenizer = Tokenizer()
 def data_preparation(data):
-    data = trainingData
     tokenizer.fit_on_texts(data)
     total_words = len(tokenizer.word_index) + 1
     print(total_words)
@@ -96,7 +95,9 @@ def generate_text(base_text, num_next, max_sequence_len, model):
         probs = model.predict_proba(token_list, verbose = 0)
         ##indexes from which to draw the words
         temp = np.asarray([i for i in range(len(probs[0]))])
-        predicted = np.random.choice(a = temp, size = 1, replace = True, p = probs[0])
+        predicted = np.random.choice(a = temp, size = 1, replace = True, p = probs[0]) ##This is potentially area for improvement, instead of randomly picking
+                                                                                       ##from the probability distribution
+                                                                                       ##Problem is that choosing the best would get stuck on stop words etc.
         output_word = ""
         for word, index in tokenizer.word_index.items():
             if index == predicted:
@@ -107,11 +108,12 @@ def generate_text(base_text, num_next, max_sequence_len, model):
 
 ##Piping through to train the model
 X, Y, max_len, total_words = data_preparation(trainingData)
-lstm_gen_model = create_LTSMGen(X, Y, max_len, total_words)
+#lstm_gen_model = create_LTSMGen(X, Y, max_len, total_words)
 
 ##Saving the model so that it is not necessary to retrain everything
 modelPath = "C:/Users/goodm/Desktop/UPenn/UPenn Senior Year/Spring Semester/CIS 530/Milestone 3/ltsm_gen.h5"
-lstm_gen_model.save(modelPath)
+#lstm_gen_model.save(modelPath)
+lstm_gen_model = load_model(modelPath)
 ##Generate a bunch of fake wine reviews
 ##Creating 4000 fake reviews which will then be included with 2000 true reviews to train and test the discriminator
 ##Output is pretty incoherent, but at least as some semblance of sense.
@@ -133,8 +135,6 @@ genPath = "C:/Users/goodm/Desktop/UPenn/UPenn Senior Year/Spring Semester/CIS 53
 with open(genPath, 'w') as f:
     for item in genReviews:
         f.write("%s\n" % item)
-
-
 
 #####################################################################
 ##Now building the discriminator
@@ -171,6 +171,7 @@ def fit_discrim(X_train, y_train, max_sequence_len, total_words):
     return model
 
 ##Randomly pulling 2000 random correct sentences
+
 from random import sample
 trueSamples = sample(trainingDataOG, k = 2000)
 #Our generated samples deteriorate rapidly beyond 1 senetence length, so to not bias the discriminator on length alone, we will truncate each review
@@ -190,8 +191,8 @@ len(X_train[0])
 discriminator = fit_discrim(X_train, totalLabels, max_sequence_len, total_words)
 
 modelPath = "C:/Users/goodm/Desktop/UPenn/UPenn Senior Year/Spring Semester/CIS 530/Milestone 3/discriminator_model.h5"
-discriminator.save(modelPath)
-
+#discriminator.save(modelPath)
+discriminator = load_model(modelPath)
 ##Evaluating the discriminator against unseen validation data!
 from random import sample
 trueSamples_val = sample(trainingDataOG, k = 2000)
@@ -211,22 +212,42 @@ scores = discriminator.evaluate(X_test, totalLabels_val, verbose=0)
 print("Accuracy: %.2f%%" % (scores[1]*100))
 ##Discriminator with 67.05% accuracy on validation data
 
-##Taking a peak at fake reviews labeled as 1
-#predictions = discriminator.predict(X_test)
-#fake_pred = predictions[2000:]
-#type(genReviews[2000:])
-#genReviews_test = np.asarray(genReviews[2000:])
-#genReviews_test[(fake_pred >= 0.95).flatten()]
-
 ##################################################################################################
 #Now, it is time to hook up the GAN with our discriminator and the generator and see what happens!
 ##################################################################################################
-#Here-in lies the rub...
-##Potential, Pseudo-GAN Algorithm:
+keptGen = []
+##Pseudo-GAN Algorithm:
+num_rounds = 20
+for rounds in range(num_rounds):
 ##Generate twenty real and twenty false
+    from random import sample
+    trueSamples_iter = sample(trainingDataOG, k = 40)
+    genReviews_iter = manyReviews(40, seedTriGrams, max_len, lstm_gen_model)
+    ##Now testing the discriminator, and training it on the missses
+    for i, sample in enumerate(trueSamples_iter): trueSamples_iter[i] = " ".join(sample.split('.')[0].split(' ')[:49])
 
-##When the model is fooled, train the discriminator on the fooling observations, ie strengthen the discriminator
+    ##Preping data for dsciriminator task
+    totalReviews_iter = trueSamples_iter + genReviews_iter
+    totalLabels_iter = [1 if i < 40 else 0 for i in range(len(totalReviews_iter))]
+    totalLabels_iter = np.asarray(totalLabels_iter)
 
-##Train the generator on the twenty real examples, ie strengthen the generator
+    #tokenDiscrim = Tokenizer()
+    X_test_iter, max_sequence_len_iter, total_words_iter = prep_discrim(totalReviews_iter)
+    len(X_test_iter[1])
+    ##Storing predictions which fool the discriminator
+    predictions = discriminator.predict(X_test_iter)
+    fake_pred = predictions[40:]
+    genReviews_iter= np.asarray(genReviews_iter)
+    keptGen_iter = genReviews_iter[(fake_pred >= 0.80).flatten()]
+    keptGen += keptGen_iter.tolist()
+    scores_iter = discriminator.evaluate(X_test_iter, totalLabels_iter, verbose=0)
+    print("Accuracy: %.2f%%" % (scores_iter[1]*100))
+    ##Train the discriminator on the fooling observations, ie strengthen the discriminator
+    discriminator.fit(X_test_iter, totalLabels_iter, epochs = 3, batch_size = 32, verbose = 0)
 
-##Every few passes, output sentences that fooled the discriminator
+len(keptGen)
+##Progression of more and more difficult "trick" artificial generations
+keptGen[0::3]
+##Saving the new discriminator model
+modelPath = "C:/Users/goodm/Desktop/UPenn/UPenn Senior Year/Spring Semester/CIS 530/Milestone 3/discriminator_model_enhanced.h5"
+discriminator.save(modelPath)
