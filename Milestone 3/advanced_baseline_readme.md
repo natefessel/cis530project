@@ -1,4 +1,4 @@
-## Advanced Published Baseline Details -- Generating wine review chunks
+## Advanced Published Baseline Details -- Generating Wine Review Text
 
 ### Goal
 Implement a LSTM, LSTM, WGAN (generator, discriminator, GAN connection, respectively) language generation model to generate chunks of wine-review text. This model is based on the paper based on "Adverserial Generation of Natural Language".
