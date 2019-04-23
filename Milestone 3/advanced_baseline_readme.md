@@ -12,7 +12,8 @@ We test the discriminator in this way across multiple iterations, and as a resul
 Below, we see from the sample output that the output we can produce, while being non sensible in many parts, it does produce many decent bigrams and trigrams of text.
 
 Sample of output review chunks which beat our discriminator model:
-['a lasting finish even should vineyard not crisp and sound over mouth fleshy for and elegantly',
+
+'a lasting finish even should vineyard not crisp and sound over mouth fleshy for and elegantly',
 
 'there is an this fruit but refreshing with mint sweetened alcohol kissed aromas with but cabernet there drinkable tannins',
 
@@ -32,15 +33,13 @@ Sample of output review chunks which beat our discriminator model:
 
 'this beautiful single-vineyard that fresh peaches caramel spice the this berry coffee citrus lead of modest',
 
-'musella is a and smooth slight modern spicy the chops earthy still lean will white this full flavors']
+'musella is a and smooth slight modern spicy the chops earthy still lean will white this full flavors'
 
 
 ### Areas to enhance for the next stage:
 
-1. Actually having a method for propogating error in the discriminator to the text generator would be ideal. This will be likely the most difficult thing
-to implement.
+1. Actually having a method for propogating error in the discriminator to the text generator would be ideal. This will be likely the most difficult thing to implement.
 
-2. Dealing with preposition and stop word stacking in our outputs, as well as repeating words.
+2. Dealing with preposition and stop-word occurences back-to-back in our outputs, as well as repeating words would be a nice extension.
 
-3. Other ideas to enhance our produced sentences. An area of focus would be getting the longer run sentences to sounds more realistic, perhaps with
-curriculm learning.
+3. Other ideas to enhance our produced sentences fall under this section. An area of focus would be getting the longer run sentences to sounds more realistic, perhaps by trying a type of curriculm learning, or instituting more structure into our generating model.
