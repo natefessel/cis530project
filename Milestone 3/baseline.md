@@ -8,7 +8,7 @@ Running through all of the code with model building in "baseline.py" would proba
 
 Another high cost part of the code came from when we had to train our descriminator.  We needed to generate thousands of fake reviews, so that our model could train on the task of distinguishing fake reviews from real reviews (perhaps unsurprisingly, we could not find any datasets of computer generated wine reviews online, thus necessitating the creation of our own data set). 4000 generated fake reviews are stored in the file "gen_4000.txt". Each fake review chunk is seperated by a new line character.
 
-We recommend browsing through the code as needed, but note that in its current form it is set up to load models and not train them. Be aware that Keras and TensorFlow as Keras's backend are needed to run code chunks involving our model.
+We recommend browsing through the code as needed, but note that in its current form it is set up to load models and not train them, so please do not run the code anticipating to train the models. Be aware that Keras and TensorFlow as Keras's backend are needed to run code chunks involving our models as well.
 
 For the final deliverable for this project, we will implement a seperate executable that writes a user-specified number of fake wine reviews using our adversarial screening process, as described below.
 
