@@ -13,7 +13,7 @@ We recommend browsing through the code as needed, but note that in its current f
 For the final deliverable for this project, we will implement a seperate executable that writes a user-specified number of fake wine reviews using our adversarial screening process, as described below.
 
 ### Current Progress and Output
-We were able to build the LSTM generator and the LSTM discriminator. These models were constructed using the Keras library, and are saved in the Milestone 3 folder as "lstm_gen.h5" and "discriminator_model.h5", respectively. Once we switched the generator model from producing the next most likely word, to instead randomly selecting the next word from a probability distribution of possible words, our generated output improved greatly. Originally, the output was getting stuck on producing almost exclusivley highly probable stop words (for instance, outputing sequences like 'a a a a a'); the above change solved that problem in a brusk but direct way.
+We were able to build the LSTM generator and the LSTM discriminator. These models were constructed using the Keras library, and are saved in the Milestone 3 folder as "lstm_gen.h5" and "discriminator_model.h5", respectively. Our base discriminator had a level of 67.05% accuracy on validation data. Once we switched the generator model from producing the next most likely word, to instead randomly selecting the next word from a probability distribution of possible words, our generated output improved greatly. Originally, the output was getting stuck on producing almost exclusivley highly probable stop words (for instance, outputing sequences like 'a a a a a'); the above change solved that problem in a brusk but direct way.
 
 To produce even higher quality outputs, we pit the generator against the discriminator (so in some way a pseudo-generative adversarial network), accepting as 'valid' wine reviews only the generated ones that the discriminator seems to think are real with a high probability.
 
@@ -21,7 +21,7 @@ We test the discriminator in this way across multiple iterations, where at each 
 
 Below, we see from the sample output that the output we can produce, while being non sensical in many parts, does contain many decent bigrams and trigrams of text. The accepted review output does capture well the adjective-laden nature of the wine reviews, but in almost all cases is several edits away from being proper english.
 
-Sample of output review chunks which beat our discriminator and were accepted as "real" reviews:
+In terms of a technical evaluation of our generator's performance, we would want to see our generator produce samples which are classified as real as much as possible; as we cannot currently back propogate error to improve the generator, however, we cannot use this evaluation metric at this time. Our test data is in some sense trying to generate output as well as possible, so below we have our "test output". Sample of output review chunks which beat our discriminator and were accepted as "real" reviews:
 
 'a lasting finish even should vineyard not crisp and sound over mouth fleshy for and elegantly',
 
