@@ -1,18 +1,26 @@
 import os
 import random
-import sys
 import numpy as np
-from pymagnitude import *
+import csv
+from pymagnitude import Magnitude, MagnitudeUtils
+import string
+
 
 class DataLoader(object):
-    def __init__(self, datadir):
-        self.datadir = datadir
+    def __init__(self):
+        self.embedding_dimension = 100
+        self.datadir = os.path.normpath(
+            os.path.join(os.getcwd(), '..', 'data', 'wine-reviews'))
+        self.vectors = Magnitude(
+            MagnitudeUtils.download_model(
+                'glove/heavy/glove.6B.100d.magnitude')
+        )
         self.read_data()
 
     def read_data(self):
         """
-        read_data takes a datadir with three wine review text files, named test, train and validation
-        Each review is stored in a list within a reviews dictionary. The reviews dictionary is then returned
+        returns a list of tuples, review_data]
+        Also saves this list in self.reviews.
         """
 
         self.reviews = {}
@@ -25,69 +33,87 @@ class DataLoader(object):
         self.pointer['test'] = 0
         self.pointer['train'] = 0
 
-        # PALMER: batch the reviews into self.song with [(meta1, meta2, review content)]
-        # BEN : we will start by not using the meta data and just doing review content intially.
-        for d_type in ['validation', 'test', 'train']:
-            cur_direct = self.datadir + "/" + d_type + ".txt"
-            with open(cur_direct, 'r', encoding='utf-8', errors='ignore') as f:
-                 text = f.read().strip().split('\n')
-                 for i, line in enumerate(text):
-                     if i > 0:
-                        try:
-                            description = line.split('"')[1]
-                        except:
-                            description = line.split(',')[1]
-                            description = description[1:(len(description) - 1)]
-                     self.reviews[d_type].append(description.lower())
+        dataset_suffix = {
+            'validation': 'val',
+            'test': 'test',
+            'train': 'small'
+        }
+
+        for dataset in self.reviews:
+            csv_path = os.path.join(
+                self.datadir,
+                'wine_reviews_{}.csv'.format(dataset_suffix[dataset]),
+            )
+
+            descriptions = []
+            with open(csv_path) as f:
+                reader = csv.reader(f)
+                header = None
+                for row in reader:
+                    if header is None:
+                        header = row
+                        continue
+                    description_index = header.index('description')
+                    descriptions.append(row[description_index])
+
+            self.reviews[dataset] = descriptions
+
+        random.shuffle(self.reviews['train'])
+
         return self.reviews
 
     def rewind(self, part='train'):
         self.pointer[part] = 0
 
-    def get_batch(self, vecPath, batch_size, review_length, part='train'):
+    def get_batch(self, batchsize, review_length, part='train'):
         """
-          get_batch() returns a batch from self.reviews, as a
-          tensor, i.e a 2d numpy array.
+        get_batch() returns a batch from self.reviews, as a tensor of review_data.
 
-          The tensor is a tensor of multiple winereviews and for each wine review the first number in reviewLength
+        The tensor contains review data.
+        review data has dimensions [batchsize, review_length, self.embedding_dimension]
 
-          Since self.songs was shuffled in read_data(), the batch is
-          a random selection without repetition. ##BEN: Not sure what this means here but will need to look into further
+        To have the sequence be the primary index is convention in
+        tensorflow's rnn api.
+        The tensors will have to be split later.
+
+        Since self.reviews was shuffled in read_data(), the batch is
+        a random selection without repetition.
+
+        review_length is some number of words
         """
-        vectors = Magnitude(file_path)
-        ##Check to ensure that the batch is able to be secured.
-        ##Load the first x words, stripping punctuation, lower casing and splitting
-        
-        ##Concatenate each word's vector representation together
+        if self.pointer[part] > len(self.reviews[part]) - batchsize:
+            return [None, None]
 
-        ##Will need to update the pointers a the end of the batch
-        self.pointer[part] += batch_size
+        batch_reviews = np.ndarray(
+            shape=[batchsize, review_length, self.embedding_dimension])
 
-    def get_num_review_features(self):
-        # PALMER override this
-        # return NUM_FEATURES_PER_TONE * self.tones_per_cell + 1
-        return 0
-    """
-    def get_num_meta_features(self): ##Probably not relevant right now
-    # PALMER override this
-    # return len(self.genres) + len(self.composers)
-    #return 0
-    """
+        batch_start = self.pointer[part]
+        self.pointer[part] += batchsize
+        batch_end = self.pointer[part]
 
-"""
-def onehot(i, length):
-a = np.zeros(shape=[length])
-a[i] = 1
-return a
-"""
+        nan_vector = np.full((self.embedding_dimension,), np.nan)
 
-def main(): ##BEN: TODO, get this to run with a command line argument appropriatley
-    ##Argument for word vector embedding locations
-    filename = sys.argv[1]
-    dl = DataLoader(datadir=None)
-    print(('length, frequency, velocity, time from previous start.'))
-    abs_song_data = dl.read_one_file(
-        os.path.dirname(filename),
-        os.path.basename(filename),
-    )
+        for review_index in range(batch_start, batch_end):
+            review = self.reviews[part][review_index]
+            review.translate(str.maketrans('', '', string.punctuation))
+            words = review.split()
+            print(len(words))
 
+            vecs = np.array([
+                self.vectors.query(words[word_index])
+                for word_index in range(min(len(words), review_length))
+            ])
+            if len(words) < review_length:
+                padding = np.array([nan_vector] * (review_length - len(words)))
+                vecs = np.concatenate((vecs, padding))
+            batch_reviews[review_index, :, :] = vecs
+
+        return batch_reviews
+
+
+def main():
+    dl = DataLoader()
+    print(dl.get_batch(1, 50)[0,-1])
+
+if __name__ == '__main__':
+    main()
