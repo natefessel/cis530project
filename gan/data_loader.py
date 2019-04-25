@@ -2,6 +2,7 @@ import os
 import random
 import sys
 import numpy as np
+import string
 from pymagnitude import *
 
 class DataLoader(object):
@@ -51,17 +52,29 @@ class DataLoader(object):
 
           The tensor is a tensor of multiple winereviews and for each wine review the first number in reviewLength
 
-          Since self.songs was shuffled in read_data(), the batch is
-          a random selection without repetition. ##BEN: Not sure what this means here but will need to look into further
         """
         vectors = Magnitude(file_path)
-        ##Check to ensure that the batch is able to be secured.
-        ##Load the first x words, stripping punctuation, lower casing and splitting
-        
-        ##Concatenate each word's vector representation together
-
-        ##Will need to update the pointers a the end of the batch
-        self.pointer[part] += batch_size
+        ##Check to ensure that there are enough words left for the batch.
+        if (len(self.reviews[part]) - self.pointer[part])  > batch_size:
+            batch = np.array([])
+            for i, review in enumerate(self.reviews[part]):
+                ##split review into multiple words
+                baseNP = np.array([])
+                words = review.split()[:review_length] ## TODO: Reveiews shorter than the reveiw length will need to be padded, how to do is a good question
+                for word in words:
+                    ##Stripping punctuation from the word
+                    word = word.translate(str.maketrans('', '', string.punctuation)) ##BEN : Error checking to ensure that the word is in the vector will be key
+                    baseNP = np.concatenate(baseNP, vectors.query(word))
+                ##Stacking each review to be appropriatly
+                if i == 0:
+                    batch = np.concatenate(batch, baseNP)
+                else:
+                    batch = np.vstack(batch, baseNP)
+            ##updating pointers
+            self.pointer[part] += batch_size
+            return batch
+        else:
+            return("NOT ENOUGH FOR NEXT BAtch") ## TODO: Make sure that this return value is explicitly checked against in other parts of the program
 
     def get_num_review_features(self):
         # PALMER override this
