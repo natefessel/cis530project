@@ -32,77 +32,153 @@ import pickle as pkl
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.python.client import timeline
 
 from data_loader import DataLoader
 
 flags = tf.flags
-logging = tf.logging
 
 flags.DEFINE_string(
-    "datadir", None, "Directory to save and load midi music files.")
+    "datadir",
+    None,
+    "Directory to load wine review files.",
+)
 flags.DEFINE_string(
-    "traindir", None, "Directory to save checkpoints and gnuplot files.")
-flags.DEFINE_integer("epochs_per_checkpoint", 2,
-                     "How many training epochs to do per checkpoint.")
-flags.DEFINE_boolean("log_device_placement", False,           #
-                     "Outputs info on device placement.")
-flags.DEFINE_integer("exit_after", 1440,
-                     "exit after this many minutes")
-flags.DEFINE_boolean("sample", False,
-                     "Sample output from the model. Assume training was already done. Save sample output to file.")
-flags.DEFINE_float("init_scale", 0.05,                # .1, .04
-                   "the initial scale of the weights")
-flags.DEFINE_float("learning_rate", 0.1,              # .05,.1,.9
-                   "Learning rate")
-flags.DEFINE_float("d_lr_factor", 0.5,                # .5
-                   "Learning rate decay")
-flags.DEFINE_float("max_grad_norm", 5.0,              # 5.0, 10.0
-                   "the maximum permissible norm of the gradient")
-flags.DEFINE_float("keep_prob", 0.5,                  # 1.0, .35
-                   "Keep probability. 1.0 disables dropout.")
-flags.DEFINE_float("lr_decay", 1.0,                   # 1.0
-                   "Learning rate decay after each epoch after epochs_before_decay")
-flags.DEFINE_integer("num_layers_g", 2,                 # 2
-                     "Number of stacked recurrent cells in G.")
-flags.DEFINE_integer("num_layers_d", 2,                 # 2
-                     "Number of stacked recurrent cells in D.")
-flags.DEFINE_integer("review_length", 100,               # 200, 500
-                     "Limit review inputs to this number of events.")
-flags.DEFINE_integer("hidden_size_g", 100,              # 200, 1500
-                     "Hidden size for recurrent part of G.")
-flags.DEFINE_integer("hidden_size_d", 100,              # 200, 1500
-                     "Hidden size for recurrent part of D. Default: same as for G.")
-flags.DEFINE_integer("epochs_before_decay", 60,       # 40, 140
-                     "Number of epochs before starting to decay.")
-flags.DEFINE_integer("max_epoch", 500,                # 500, 500
-                     "Number of epochs before stopping training.")
-flags.DEFINE_integer("batch_size", 20,                # 10, 20
-                     "Batch size.")
-flags.DEFINE_integer("pretraining_epochs", 6,        # 20, 40
-                     "Number of epochs to run lang-model style pretraining.")
-flags.DEFINE_boolean("pretraining_d", False,          #
-                     "Train D during pretraining.")
-flags.DEFINE_boolean("float16", False,                #
-                     "Use floa16 data type. Otherwise, use float32.")
-
-flags.DEFINE_boolean("adam", False,                   #
-                     "Use Adam optimizer.")
-flags.DEFINE_boolean("feature_matching", False,       #
-                     "Feature matching objective for G.")
-flags.DEFINE_float("reg_scale", 1.0,       #
-                   "L2 regularization scale.")
-flags.DEFINE_float("random_input_scale", 1.0,       #
-                   "Scale of random inputs (1.0=same size as generated features).")
-flags.DEFINE_boolean("end_classification", False,
-                     "Classify only in ends of D. Otherwise, does classification at every timestep and mean reduce.")
+    "traindir",
+    None,
+    "Directory to save checkpoints.",
+)
+flags.DEFINE_integer(
+    "epochs_per_checkpoint",
+    2,
+    "How many training epochs to do per checkpoint.",
+)
+flags.DEFINE_boolean(
+    "log_device_placement",
+    False,              #
+    "Outputs info on device placement.",
+)
+flags.DEFINE_integer(
+    "exit_after",
+    1440,
+    "exit after this many minutes",
+)
+flags.DEFINE_boolean(
+    "sample",
+    False,
+    "Sample output from the model. Assume training was already done. Save sample output to file.",
+)
+flags.DEFINE_float(
+    "init_scale",
+    0.05,               # .1, .04
+    "the initial scale of the weights",
+)
+flags.DEFINE_float(
+    "learning_rate",
+    0.1,                # .05,.1,.9
+    "Learning rate",
+)
+flags.DEFINE_float(
+    "d_lr_factor",
+    0.5,                # .5
+    "Learning rate decay",
+)
+flags.DEFINE_float(
+    "max_grad_norm",
+    5.0,                # 5.0, 10.0
+    "the maximum permissible norm of the gradient",
+)
+flags.DEFINE_float(
+    "keep_prob",
+    0.5,                # 1.0, .35
+    "Keep probability. 1.0 disables dropout.",
+)
+flags.DEFINE_float(
+    "lr_decay",
+    1.0,                # 1.0
+    "Learning rate decay after each epoch after epochs_before_decay",
+)
+flags.DEFINE_integer(
+    "num_layers_g",
+    2,                  # 2
+    "Number of stacked recurrent cells in G.",
+)
+flags.DEFINE_integer(
+    "num_layers_d",
+    2,                  # 2
+    "Number of stacked recurrent cells in D.",
+)
+flags.DEFINE_integer(
+    "review_length",
+    32,                # 200, 500
+    "Limit review inputs to this number of events.",
+)
+flags.DEFINE_integer(
+    "hidden_size_g",
+    100,                # 200, 1500
+    "Hidden size for recurrent part of G.",
+)
+flags.DEFINE_integer(
+    "hidden_size_d",
+    100,                # 200, 1500
+    "Hidden size for recurrent part of D. Default: same as for G.",
+)
+flags.DEFINE_integer(
+    "epochs_before_decay",
+    60,                 # 40, 140
+    "Number of epochs before starting to decay.",
+)
+flags.DEFINE_integer(
+    "max_epoch",
+    20,                # 500, 500
+    "Number of epochs before stopping training.",
+)
+flags.DEFINE_integer(
+    "batch_size",
+    20,                 # 10, 20
+    "Batch size.",
+)
+flags.DEFINE_integer(
+    "pretraining_epochs",
+    6,                  # 20, 40
+    "Number of epochs to run lang-model style pretraining.",
+)
+flags.DEFINE_boolean(
+    "initialize_d",
+    False,              #
+    "Initialize variables for D, no matter if there are trained versions in checkpoint.",
+)
+flags.DEFINE_boolean(
+    "float16",
+    True,              #
+    "Use floa16 data type. Otherwise, use float32.",
+)
+flags.DEFINE_boolean(
+    "adam",
+    False,              #
+    "Use Adam optimizer.",
+)
+flags.DEFINE_boolean(
+    "feature_matching",
+    False,              #
+    "Feature matching objective for G.",
+)
+flags.DEFINE_float(
+    "reg_scale",
+    1.0,                #
+    "L2 regularization scale.",
+)
+flags.DEFINE_float(
+    "random_input_scale",
+    1.0,                #
+    "Scale of random inputs (1.0=same size as generated features).",
+)
+flags.DEFINE_boolean(
+    "end_classification",
+    False,
+    "Classify only in ends of D. Otherwise, does classification at every timestep and mean reduce.",
+)
 
 FLAGS = flags.FLAGS
-
-model_layout_flags = [
-    'num_layers_g', 'num_layers_d', 'hidden_size_g',
-    'hidden_size_d', 'feature_matching',
-]
 
 
 def make_rnn_cell(
@@ -150,14 +226,22 @@ def linear(inp, output_dim, scope=None, stddev=1.0, reuse_scope=False):
     const = tf.constant_initializer(0.0, dtype=data_type())
     with tf.variable_scope(scope or 'linear') as scope:
         scope.set_regularizer(
-            tf.contrib.layers.l2_regularizer(scale=FLAGS.reg_scale))
+            tf.contrib.layers.l2_regularizer(scale=FLAGS.reg_scale)
+        )
         if reuse_scope:
             scope.reuse_variables()
-        #print('inp.get_shape(): {}'.format(inp.get_shape()))
         w = tf.get_variable(
-            'w', [inp.get_shape()[1], output_dim], initializer=norm, dtype=data_type())
-        b = tf.get_variable('b', [output_dim],
-                            initializer=const, dtype=data_type())
+            'w',
+            [inp.get_shape()[1], output_dim],
+            initializer=norm,
+            dtype=data_type()
+        )
+        b = tf.get_variable(
+            'b',
+            [output_dim],
+            initializer=const,
+            dtype=data_type()
+        )
     return tf.matmul(inp, w) + b
 
 
@@ -171,18 +255,18 @@ class RNNGAN(object):
         review_length = FLAGS.review_length
         self.review_length = review_length
 
-        print('review_length: {}'.format(self.review_length))
         self._input_review_data = tf.placeholder(
-            shape=[batch_size, review_length, num_review_features], dtype=data_type())
+            shape=[batch_size, review_length, num_review_features],
+            dtype=data_type(),
+        )
         review_data_inputs = [
             tf.squeeze(input_, [1])
             for input_ in tf.split(self._input_review_data, review_length, 1)
         ]
-        print(review_data_inputs)
-
         with tf.variable_scope('G') as scope:
             scope.set_regularizer(
-                tf.contrib.layers.l2_regularizer(scale=FLAGS.reg_scale))
+                tf.contrib.layers.l2_regularizer(scale=FLAGS.reg_scale)
+            )
             if is_training and FLAGS.keep_prob < 1:
                 cell = make_rnn_cell(
                     [FLAGS.hidden_size_g] * FLAGS.num_layers_g,
@@ -232,14 +316,20 @@ class RNNGAN(object):
 
                 input_ = tf.nn.relu(
                     linear(
-                        input_, FLAGS.hidden_size_g,
-                        scope='input_layer', reuse_scope=(i != 0)
+                        input_,
+                        FLAGS.hidden_size_g,
+                        scope='input_layer',
+                        reuse_scope=(i != 0),
                     )
                 )
                 output, state = cell(input_, state)
                 outputs.append(output)
                 generated_point = linear(
-                    output, num_review_features, scope='output_layer', reuse_scope=(i != 0))
+                    output,
+                    num_review_features,
+                    scope='output_layer',
+                    reuse_scope=(i != 0),
+                )
                 self._generated_features.append(generated_point)
 
             # PRETRAINING GENERATOR, will feed inputs, not generated outputs:
@@ -256,12 +346,21 @@ class RNNGAN(object):
                 if len(concat_values):
                     input_ = tf.concat(axis=1, values=concat_values)
                 input_ = tf.nn.relu(
-                    linear(input_, FLAGS.hidden_size_g, scope='input_layer', reuse_scope=(i != 0)))
+                    linear(
+                        input_,
+                        FLAGS.hidden_size_g,
+                        scope='input_layer',
+                        reuse_scope=(i != 0),
+                    )
+                )
                 output, state = cell(input_, state)
                 outputs.append(output)
-                #generated_point = tf.nn.relu(linear(output, num_review_features, scope='output_layer', reuse_scope=(i!=0)))
                 generated_point = linear(
-                    output, num_review_features, scope='output_layer', reuse_scope=(i != 0))
+                    output,
+                    num_review_features,
+                    scope='output_layer',
+                    reuse_scope=(i != 0)
+                )
                 self._generated_features_pretraining.append(generated_point)
                 prev_target = review_data_inputs[i]
 
@@ -291,8 +390,15 @@ class RNNGAN(object):
         print(tf.transpose(tf.stack(self._generated_features_pretraining),
                            perm=[1, 0, 2]).get_shape())
         print(self._input_review_data.get_shape())
-        self.rnn_pretraining_loss = tf.reduce_mean(tf.squared_difference(x=tf.transpose(
-            tf.stack(self._generated_features_pretraining), perm=[1, 0, 2]), y=self._input_review_data))
+        self.rnn_pretraining_loss = tf.reduce_mean(
+            tf.squared_difference(
+                x=tf.transpose(
+                    tf.stack(self._generated_features_pretraining),
+                    perm=[1, 0, 2],
+                ),
+                y=self._input_review_data,
+            )
+        )
         self.rnn_pretraining_loss = self.rnn_pretraining_loss + reg_loss
 
         pretraining_grads, _ = tf.clip_by_global_norm(tf.gradients(
@@ -364,13 +470,11 @@ class RNNGAN(object):
         self._lr_update = tf.assign(self._lr, self._new_lr)
 
     def discriminator(self, inputs, is_training, msg=''):
-        print('discriminator(inputs):', inputs)
         if is_training and FLAGS.keep_prob < 1:
             inputs = [
                 tf.nn.dropout(input_, FLAGS.keep_prob)
                 for input_ in inputs
             ]
-            print('discriminator(inputs) - override:', inputs)
 
         keep_prob = FLAGS.keep_prob if is_training and FLAGS.keep_prob < 1 else 1.0
         cell_fw = make_rnn_cell(
@@ -382,12 +486,20 @@ class RNNGAN(object):
             dropout_keep_prob=keep_prob,
         )
 
-        self._initial_state_fw = cell_fw.zero_state(self.batch_size, data_type())
+        self._initial_state_fw = cell_fw.zero_state(
+            self.batch_size, data_type())
 
         # if not FLAGS.unidirectional_d:
-        self._initial_state_bw = cell_bw.zero_state(self.batch_size, data_type())
-        print("cell_fw",cell_fw.output_size)
-        outputs, state_fw, state_bw = tf.contrib.rnn.static_bidirectional_rnn(cell_fw, cell_bw, inputs, initial_state_fw=self._initial_state_fw, initial_state_bw=self._initial_state_bw)
+        self._initial_state_bw = cell_bw.zero_state(
+            self.batch_size, data_type())
+        print("cell_fw", cell_fw.output_size)
+        outputs, state_fw, state_bw = tf.contrib.rnn.static_bidirectional_rnn(
+            cell_fw,
+            cell_bw,
+            inputs,
+            initial_state_fw=self._initial_state_fw,
+            initial_state_bw=self._initial_state_bw
+        )
         # else:
         #   outputs, state = tf.nn.rnn(cell_fw, inputs, initial_state=self._initial_state_fw)
 
@@ -404,8 +516,13 @@ class RNNGAN(object):
         decisions = tf.transpose(decisions, perm=[1, 0, 2])
         print('shape, decisions: {}'.format(decisions.get_shape()))
         decision = tf.reduce_mean(decisions, reduction_indices=[1, 2])
-        decision = tf.Print(decision, [decision],
-                            '{} decision = '.format(msg), summarize=20, first_n=20)
+        decision = tf.Print(
+            decision,
+            [decision],
+            '{} decision = '.format(msg),
+            summarize=20,
+            first_n=20,
+        )
         return (decision, tf.transpose(tf.stack(outputs), perm=[1, 0, 2]))
 
     def assign_lr(self, session, lr_value):
@@ -428,7 +545,16 @@ class RNNGAN(object):
         return self._lr
 
 
-def run_epoch(session, model, loader, datasetlabel, eval_op_g, eval_op_d, pretraining=False, verbose=False, pretraining_d=False):
+def run_epoch(
+    session,
+    model,
+    loader,
+    datasetlabel,
+    eval_op_g,
+    eval_op_d,
+    pretraining=False,
+    verbose=False,
+):
     """Runs the model on the given data."""
     epoch_start_time = time.time()
     g_loss, d_loss = 10.0, 10.0
@@ -460,10 +586,7 @@ def run_epoch(session, model, loader, datasetlabel, eval_op_g, eval_op_d, pretra
                 op_d = tf.no_op()
 
         if pretraining:
-            if pretraining_d:
-                fetches = [model.rnn_pretraining_loss, model.d_loss, op_g, op_d]
-            else:
-                fetches = [model.rnn_pretraining_loss, tf.no_op(), op_g, op_d]
+            fetches = [model.rnn_pretraining_loss, tf.no_op(), op_g, op_d]
         else:
             fetches = [model.g_loss, model.d_loss, op_g, op_d]
 
@@ -476,7 +599,7 @@ def run_epoch(session, model, loader, datasetlabel, eval_op_g, eval_op_d, pretra
             d_losses += d_loss
         iters += 1
 
-        if verbose and iters % 10 == 9:
+        if verbose and iters % 20 == 0:
             reviews_per_sec = (
                 float(iters * model.batch_size) /
                 float(time.time() - epoch_start_time)
@@ -484,7 +607,7 @@ def run_epoch(session, model, loader, datasetlabel, eval_op_g, eval_op_d, pretra
 
             if pretraining:
                 print(
-                    "{}: {} (pretraining) batch loss: G: {:.3f}, avg loss: G: {:.3f}, speed: {:.1f} reviews/s, avg in graph: {:.1f}, avg in python: {:.1f}.".format(
+                    "{}: {} (pretraining) batch loss: G: {:.3f}, avg loss: G: {:.3f}, speed: {:.1f} reviews/s.".format(
                         datasetlabel,
                         iters,
                         g_loss,
@@ -494,7 +617,7 @@ def run_epoch(session, model, loader, datasetlabel, eval_op_g, eval_op_d, pretra
                 )
             else:
                 print(
-                    "{}: {} batch loss: G: {:.3f}, D: {:.3f}, avg loss: G: {:.3f}, D: {:.3f}, speed: {:.1f} reviews/s, avg in graph: {:.1f}, avg in python: {:.1f}.".format(
+                    "{}: {} batch loss: G: {:.3f}, D: {:.3f}, avg loss: G: {:.3f}, D: {:.3f}, speed: {:.1f} reviews/s.".format(
                         datasetlabel,
                         iters,
                         g_loss,
@@ -514,7 +637,7 @@ def run_epoch(session, model, loader, datasetlabel, eval_op_g, eval_op_d, pretra
         return (None, None)
 
     g_mean_loss = g_losses / iters
-    d_mean_loss = None if pretraining and not pretraining_d else d_losses / iters
+    d_mean_loss = None if pretraining else d_losses / iters
     return (g_mean_loss, d_mean_loss)
 
 
@@ -527,13 +650,13 @@ def sample(session, model, batch=False):
             for batchno in range(generated_features[0].shape[0])
         ]
     else:
-        returnable = [x[0, :] for x in generated_features]
+        returnable = [[x[0, :] for x in generated_features]]
     return returnable
 
 
 def main(_):
     if not FLAGS.datadir:
-        raise ValueError("Must set --datadir to midi music dir.")
+        raise ValueError("Must set --datadir to wine review dir.")
     if not FLAGS.traindir:
         raise ValueError(
             "Must set --traindir to dir where I can save model and plots.")
@@ -568,14 +691,16 @@ def main(_):
     checkpoint_path = os.path.join(FLAGS.traindir, "model.ckpt")
 
     review_length_ceiling = FLAGS.review_length
-    if global_step < FLAGS.pretraining_epochs:
-        FLAGS.review_length = int(min((global_step + 1) * 4, review_length_ceiling))
+    # if global_step < FLAGS.pretraining_epochs:
+    #     FLAGS.review_length = int(
+    #         min((global_step + 1) * 4, review_length_ceiling))
 
     with tf.Graph().as_default(), tf.Session(config=tf.ConfigProto(log_device_placement=FLAGS.log_device_placement)) as session:
         with tf.variable_scope("model", reuse=None) as scope:
             scope.set_regularizer(
                 tf.contrib.layers.l2_regularizer(scale=FLAGS.reg_scale))
-            m = RNNGAN(is_training=True, num_review_features=num_review_features)
+            m = RNNGAN(is_training=True,
+                       num_review_features=num_review_features)
 
         if FLAGS.initialize_d:
             vars_to_restore = {}
@@ -609,22 +734,33 @@ def main(_):
         if not FLAGS.sample:
             train_g_loss, train_d_loss = 1.0, 1.0
             for i in range(global_step, FLAGS.max_epoch):
-                lr_decay = FLAGS.lr_decay ** max(i - FLAGS.epochs_before_decay, 0.0)
-
-                new_review_length = (
-                    int(min((i + 1) * 4, review_length_ceiling))
-                    if global_step < FLAGS.pretraining_epochs else
-                    review_length_ceiling
+                lr_decay = (
+                    FLAGS.lr_decay ** max(i - FLAGS.epochs_before_decay, 0.0)
                 )
 
-                if new_review_length != FLAGS.review_length:
-                    print('Changing review_length, now training on {} events from reviews.'.format(
-                        new_review_length))
-                    FLAGS.review_length = new_review_length
-                    with tf.variable_scope("model", reuse=True) as scope:
-                        scope.set_regularizer(
-                            tf.contrib.layers.l2_regularizer(scale=FLAGS.reg_scale))
-                        m = RNNGAN(is_training=True, num_review_features=num_review_features)
+                # new_review_length = (
+                #     int(min((i + 1) * 4, review_length_ceiling))
+                #     if global_step < FLAGS.pretraining_epochs else
+                #     review_length_ceiling
+                # )
+                #
+                # if new_review_length != FLAGS.review_length:
+                #     print(
+                #         'Changing review_length, now training on {} events from reviews.'.format(
+                #             new_review_length
+                #         )
+                #     )
+                #     FLAGS.review_length = new_review_length
+                #     with tf.variable_scope("model", reuse=True) as scope:
+                #         scope.set_regularizer(
+                #             tf.contrib.layers.l2_regularizer(
+                #                 scale=FLAGS.reg_scale
+                #             )
+                #         )
+                #         m = RNNGAN(
+                #             is_training=True,
+                #             num_review_features=num_review_features
+                #         )
 
                 if not FLAGS.adam:
                     m.assign_lr(session, FLAGS.learning_rate * lr_decay)
@@ -632,38 +768,55 @@ def main(_):
                 save = False
                 do_exit = False
 
-                print("Epoch: {} Learning rate: {:.3f}, pretraining: {}".format(
-                    i, session.run(m.lr), (i < FLAGS.pretraining_epochs)))
-                if i < FLAGS.pretraining_epochs:
-                    opt_d = tf.no_op()
-                    if FLAGS.pretraining_d:
-                        opt_d = m.opt_d
-                    train_g_loss, train_d_loss = run_epoch(
-                        session, m, loader, 'train', m.opt_pretraining, opt_d,
-                        pretraining=True, verbose=True,
-                        pretraining_d=FLAGS.pretraining_d
+                print(
+                    "Epoch: {} Learning rate: {:.3f}, pretraining: {}".format(
+                        i,
+                        session.run(m.lr),
+                        (i < FLAGS.pretraining_epochs),
                     )
-                    if FLAGS.pretraining_d:
-                        try:
-                            print("Epoch: {} Pretraining loss: G: {:.3f}, D: {:.3f}".format(
-                                i, train_g_loss, train_d_loss))
-                        except:
-                            print(train_g_loss)
-                            print(train_d_loss)
-                    else:
-                        print("Epoch: {} Pretraining loss: G: {:.3f}".format(
-                            i, train_g_loss))
+                )
+
+                if i < FLAGS.pretraining_epochs:
+                    train_g_loss, train_d_loss = run_epoch(
+                        session=session,
+                        model=m,
+                        loader=loader,
+                        datasetlabel='train',
+                        eval_op_g=m.opt_pretraining,
+                        eval_op_d=tf.no_op(),
+                        pretraining=True,
+                        verbose=True,
+                    )
+                    print("Epoch: {} Pretraining loss: G: {:.3f}".format(
+                        i, train_g_loss))
                 else:
                     train_g_loss, train_d_loss = run_epoch(
-                        session, m, loader, 'train', m.opt_d, m.opt_g, verbose=True)
+                        session=session,
+                        model=m,
+                        loader=loader,
+                        datasetlabel='train',
+                        eval_op_g=m.opt_d,
+                        eval_op_d=m.opt_g,
+                        pretraining=False,
+                        verbose=True,
+                    )
                     try:
                         print("Epoch: {} Train loss: G: {:.3f}, D: {:.3f}".format(
                             i, train_g_loss, train_d_loss))
                     except:
                         print("Epoch: {} Train loss: G: {}, D: {}".format(
                             i, train_g_loss, train_d_loss))
+
                 valid_g_loss, valid_d_loss = run_epoch(
-                    session, m, loader, 'validation', tf.no_op(), tf.no_op())
+                    session=session,
+                    model=m,
+                    loader=loader,
+                    datasetlabel='validation',
+                    eval_op_g=tf.no_op(),
+                    eval_op_d=tf.no_op(),
+                    pretraining=False,
+                    verbose=False,
+                )
                 try:
                     print("Epoch: {} Valid loss: G: {:.3f}, D: {:.3f}".format(
                         i, valid_g_loss, valid_d_loss))
@@ -688,6 +841,12 @@ def main(_):
                     save = True
                     do_exit = True
 
+                    if save:
+                        saver.save(session, checkpoint_path, global_step=i)
+                        with open(os.path.join(FLAGS.traindir, 'global_step.pkl'), 'wb') as f:
+                            pkl.dump(i, f)
+                        print('{}: Saving done!'.format(i))
+
                 step_time, loss = 0.0, 0.0
                 if train_d_loss is None:  # pretraining
                     train_d_loss = 0.0
@@ -696,22 +855,30 @@ def main(_):
 
                 # PALMER: write review data to output file
                 review_data = sample(session, m, batch=True)
-                filename = os.path.join(generated_data_dir, 'out-{}-{}-{}.mid'.format(
+                filename = os.path.join(generated_data_dir, 'out-{}-{}-{}.txt'.format(
                     experiment_label, i, datetime.datetime.today().strftime('%Y-%m-%d-%H-%M-%S')))
-                loader.save_midi_pattern(filename, review_data)
+                loader.save_data(filename, review_data)
 
                 if do_exit:
                     exit()
                 sys.stdout.flush()
 
             test_g_loss, test_d_loss = run_epoch(
-                session, m, loader, 'test', tf.no_op(), tf.no_op())
+                session=session,
+                model=m,
+                loader=loader,
+                datasetlabel='test',
+                eval_op_g=tf.no_op(),
+                eval_op_d=tf.no_op(),
+                pretraining=False,
+                verbose=False,
+            )
             print("Test loss G: %.3f, D: %.3f" % (test_g_loss, test_d_loss))
 
         # PALMER: write review data to output file
         review_data = sample(session, m)
-        filename = os.path.join(generated_data_dir, 'out-{}-{}-{}.mid'.format(
-            experiment_label, i, datetime.datetime.today().strftime('%Y-%m-%d-%H-%M-%S')))
+        filename = os.path.join(generated_data_dir, 'out-{}-{}.txt'.format(
+            experiment_label, datetime.datetime.today().strftime('%Y-%m-%d-%H-%M-%S')))
         loader.save_data(filename, review_data)
         print('Saved {}.'.format(filename))
 
