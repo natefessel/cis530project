@@ -39,6 +39,8 @@ Yu, Lantao, et al. “SeqGAN: Sequence Generative Adversarial Nets with Policy G
 
 Sai, et al. “Adversarial Generation of Natural Language.” ArXiv.org, 31 May 2017, arxiv.org/abs/1705.10929.
 
+Semeniuta, Stanislau, Aliaksei Severyn, and Sylvain Gelly. "On accurate evaluation of gans for language generation." arXiv preprint arXiv:1806.04936 (2018).
+
 Lin, Kevin, et al. “Adversarial Ranking for Language Generation.” Adversarial Ranking for Language Generation, 2017, papers.nips.cc/paper/6908-adversarial-ranking-for-language-generation.
 
 Li, et al. “Adversarial Learning for Neural Dialogue Generation.” ArXiv.org, 24 Sept. 2017, arxiv.org/abs/1701.06547.
