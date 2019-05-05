@@ -4,7 +4,8 @@ as noted in the writeup, we do not have gold labels against which we can evaluat
 ### C-RNN-GAN Output
 
 ### Texygen GAN Output
-
+texygen_output.txt contains our output from the texygen model. Note that as you go down the text file, the output produced by the model steadily improves as the discriminator and generator train against eachother.
+ 
 ### Markov Chain Output
 
 ### LSAN Output

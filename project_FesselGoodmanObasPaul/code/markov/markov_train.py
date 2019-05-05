@@ -22,7 +22,7 @@ def main():
     model = markovify.Text(
         args.datafile,
         state_size=args.statesize,
-        retain_original=False,
+        # retain_original=False,
     )
     args.datafile.close()
 
@@ -32,6 +32,11 @@ def main():
     )
     with open(model_filename, 'w') as f:
         f.write(model.chain.to_json())
+
+    with open('generated.txt', 'w') as f:
+        for _ in range(300):
+            sentence = model.make_sentence()
+            f.write(sentence + '\n')
 
 
 if __name__ == '__main__':
