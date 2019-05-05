@@ -1,6 +1,3 @@
-## In General ...
-as noted in the writeup, we do not have gold labels against which we can evaluate our output. As a result, since our models are mainly generative, our output files simply output generated wine descriptions.
-
 ### Markov Chain Command Line:
 
 ### LSAN.py Command Line:
