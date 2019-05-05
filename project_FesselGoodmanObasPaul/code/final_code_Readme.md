@@ -1,6 +1,6 @@
-Markov Chain Command Line:
+### Markov Chain Command Line:
 
-LSAN.py Command Line:
+### LSAN.py Command Line:
 Much of the code provided is commented out as it is very computationally expensive to re-train the entire model each time, and EDA is not needed to produce generated output. We have uploaded in this file our two trained models: 'lstm_gen.h5' and 'disciminator_model_final.h5'. These two models in combination form the crux of our "less-sophisticated adversarial network". To run the code file, simply download the trained models, and the  training data file. You will also need to have Keras and Tensorflow installed on your machine to be able to run the file.
 
 On the command line in windows, you can run the code by providing the following arguments (assuming you are running with all relevant files in the local folder. Otherwise you will need to adjust the file paths appropriatly):
@@ -9,5 +9,5 @@ py LSAN.py --generator ltsm_gen.h5 --discriminator discriminator_model_final.h5 
 
 The --outputpath argument is simply where you would like the generated reviews written out to.
 
-Other code files:
+### Other code files:
 For our other code files, specifically the ones corresponding to the C-RNN-GAN and Texygen, they are not very easily run on a local machine with a finite amount of time. That being said, we have provided them here for you to look at.
