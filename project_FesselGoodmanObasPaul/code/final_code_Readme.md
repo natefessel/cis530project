@@ -10,4 +10,4 @@ py LSAN.py --generator ltsm_gen.h5 --discriminator discriminator_model_final.h5 
 The --outputpath argument is simply where you would like the generated reviews written out to. Run time should be roughly 1-2 minutes. You will also need to have Keras and Tensorflow installed on your machine to be able to run the file.
 
 ### Other code files:
-For our other code files, specifically the ones corresponding to the C-RNN-GAN and Texygen, they are not very easily run on a local machine with a finite amount of time. That being said, we have provided them here for you to look at.
+For our other code files, specifically the ones corresponding to the baseline NGram char-level model, C-RNN-GAN and Texygen, they are not very easily run on a local machine with a finite amount of time. That being said, we have provided them here for you to look at.
