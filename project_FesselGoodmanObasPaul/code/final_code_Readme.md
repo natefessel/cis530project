@@ -11,3 +11,5 @@ The --outputpath argument is simply where you would like the generated reviews w
 
 ### Other code files:
 For our other code files, specifically the ones corresponding to the baseline NGram char-level model, C-RNN-GAN and [Texygen](https://colab.research.google.com/drive/1TIQd3rupzY-O-W0PontB8IkMz3Blvv7_), they are not very easily run on a local machine with a finite amount of time. That being said, we have provided them either locally (ngram model, char-level rnn) or on colab (Texygen).
+
+The file mturk-analysis.ipynb imports mechanical turk batch results and performs the analysis which is presented in the write up.
