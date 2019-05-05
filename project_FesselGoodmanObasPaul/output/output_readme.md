@@ -16,4 +16,6 @@ Output from our Ngram baseline model tuned with k-smoothing is in the file ngram
 ### Markov Chain Output
 Sample data generated from the markov chain model can be found in the subdirectory markov-generated-data.
 
+### MTurk Results
+All output recieved from the MTurk evaluation of the markov model can be found within the mturk folder. Some graphs which visualize the data are included in the folder as well.
 
