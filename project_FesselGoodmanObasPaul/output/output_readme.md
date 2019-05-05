@@ -1,5 +1,5 @@
 ## In General ...
-as noted in the writeup, we do not have gold labels against which we can evaluate our output. As a result, since our models are mainly generative, our output files simply output generated wine descriptions.
+as noted in the writeup, we do not have gold labels against which we can evaluate our output. As a result, since our models are mainly generative, our output files simply contain the output of the generated wine descriptions produced by our various models.
 
 ### C-RNN-GAN Output
 
