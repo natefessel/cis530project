@@ -16,6 +16,8 @@ py LSAN.py --generator ltsm_gen.h5 --discriminator discriminator_model_final.h5 
 The --outputpath argument is simply where you would like the generated reviews written out to. Run time should be roughly 1-2 minutes. You will also need to have Keras and Tensorflow installed on your machine to be able to run the file.
 
 ### Other code files:
-For our other code files, specifically the ones corresponding to the baseline NGram char-level model, C-RNN-GAN and [Texygen](https://colab.research.google.com/drive/1TIQd3rupzY-O-W0PontB8IkMz3Blvv7_), they are not very easily run on a local machine with a finite amount of time. That being said, we have provided them either locally (ngram model, char-level rnn) or on colab (Texygen).
+For our other code files, specifically the ones corresponding to the baseline NGram char-level model, C-RNN-GAN and [Texygen](https://colab.research.google.com/drive/1TIQd3rupzY-O-W0PontB8IkMz3Blvv7_), they are not very easily run on a local machine with a finite amount of time. That being said, we have provided them either locally (ngram model, char-level rnn, clearly labeled corresponding to the model type) or on colab (Texygen).
 
-The file mturk-analysis.ipynb imports mechanical turk batch results and performs the analysis which is presented in the write up.
+The file mturk-analysis.ipynb imports mechanical turk batch results and performs the analysis which is presented in the write up. hit-design.html is the html file used to build the Amazon HIT interface.
+
+wine-data.ipynb takes in the raw data from Kaggle, cleans the data, splits the data into the different sets, and performs some EDA, as well as EDA with model output.
